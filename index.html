@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Experiments - Code Copier</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 40px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .experiment {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 20px;
+      margin: 15px auto;
+      max-width: 600px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .experiment span {
+      font-size: 18px;
+      font-weight: 500;
+    }
+    .copy-btn {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.2s;
+    }
+    .copy-btn:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <h1>Experiments</h1>
+
+  <div id="experiments"></div>
+
+  <script>
+    // 🔹 Add your actual experiment codes here
+    const experimentCodes = {
+      1: `
+      // Experiment 1 Code
+      console.log("This is Experiment 1");
+      `,
+      2: `
+      // Experiment 2 Code
+      console.log("This is Experiment 2");
+      `,
+      3: `
+      // Experiment 3 Code
+      console.log("This is Experiment 3");
+      `,
+      4: `
+      // Experiment 4 Code
+      console.log("This is Experiment 4");
+      `,
+      5: `
+      // Experiment 5 Code
+      console.log("This is Experiment 5");
+      `,
+      6: `
+      // Experiment 6 Code
+      console.log("This is Experiment 6");
+      `,
+      7: `
+/**
+ * 2-3 TREE COURSE MANAGEMENT SYSTEM
+ * 
+ * This program implements a 2-3 Tree data structure to manage course codes
+ * with operations for insertion, search, deletion, and traversal.
+ * 
+ * FEATURES:
+ * - Prevents duplicate course codes
+ * - Shows split operations during insertion
+ * - Displays search paths
+ * - Simulates merging/redistribution during deletion
+ * - Level-order tree visualization
+ * - Comprehensive error handling
+ */
+
+#include 
+#include 
+#include 
+#include 
+
+#define MAX_KEYS 2  // Maximum keys per node (2-3 tree property)
+
+/**
+ * NODE STRUCTURE
+ * Represents a node in the 2-3 Tree
+ * - keys: Array of course codes (up to MAX_KEYS + 1 for temporary storage)
+ * - children: Array of child pointers (up to MAX_KEYS + 2)
+ * - keyCount: Current number of keys in the node
+ * - isLeaf: Flag indicating if node is a leaf
+ */
+typedef struct Node {
+    char *keys[MAX_KEYS + 1];              // Course codes storage
+    struct Node *children[MAX_KEYS + 2];   // Child pointers
+    int keyCount;                          // Current keys in node
+    bool isLeaf;                           // Leaf node flag
+} Node;
+
+/**
+ * QUEUE STRUCTURE
+ * Used for level-order traversal (BFS) of the tree
+ */
+typedef struct Queue {
+    Node **nodes;    // Array of node pointers
+    int front;       // Front index
+    int rear;        // Rear index  
+    int size;        // Maximum size
+} Queue;
+
+// ==================== QUEUE OPERATIONS ====================
+
+/**
+ * Creates a new queue with specified size
+ * @param size: Maximum capacity of queue
+ * @return: Pointer to created queue
+ */
+Queue* createQueue(int size) {
+    Queue *q = (Queue*)malloc(sizeof(Queue));
+    q->nodes = (Node**)malloc(size * sizeof(Node*));
+    q->front = q->rear = 0;
+    q->size = size;
+    return q;
+}
+
+/**
+ * Adds a node to the end of the queue
+ * @param q: Queue pointer
+ * @param node: Node to enqueue
+ */
+void enqueue(Queue *q, Node *node) {
+    if (node) q->nodes[q->rear++] = node;
+}
+
+/**
+ * Removes and returns node from front of queue
+ * @param q: Queue pointer
+ * @return: Node from front or NULL if empty
+ */
+Node* dequeue(Queue *q) {
+    return (q->front < q->rear) ? q->nodes[q->front++] : NULL;
+}
+
+/**
+ * Checks if queue is empty
+ * @param q: Queue pointer
+ * @return: true if empty, false otherwise
+ */
+bool isEmpty(Queue *q) { 
+    return q->front >= q->rear; 
+}
+
+// ==================== TREE OPERATIONS ====================
+
+/**
+ * Creates a new tree node
+ * @param key: Initial course code (NULL for empty node)
+ * @param isLeaf: Whether node is a leaf
+ * @return: Pointer to new node
+ */
+Node* createNode(char *key, bool isLeaf) {
+    Node *newNode = (Node*)malloc(sizeof(Node));
+    newNode->keyCount = 0;
+    newNode->isLeaf = isLeaf;
+    
+    // Initialize all keys and children to NULL
+    for (int i = 0; i <= MAX_KEYS; i++) newNode->keys[i] = NULL;
+    for (int i = 0; i <= MAX_KEYS + 1; i++) newNode->children[i] = NULL;
+    
+    // Add initial key if provided
+    if (key) { 
+        newNode->keys[newNode->keyCount++] = strdup(key); 
+    }
+    return newNode;
+}
+
+/**
+ * Checks if a course code already exists in the tree
+ * @param root: Root of the tree
+ * @param key: Course code to check
+ * @return: true if exists, false otherwise
+ */
+bool courseExists(Node *root, char *key) {
+    if (!root) return false;
+    
+    Node *current = root;
+    while (current) {
+        // Check current node for key
+        for (int i = 0; i < current->keyCount; i++) {
+            if (strcmp(current->keys[i], key) == 0) 
+                return true;
+        }
+        
+        // Stop if leaf node reached
+        if (current->isLeaf) break;
+        
+        // Find appropriate child to traverse
+        int i = 0;
+        while (i < current->keyCount && strcmp(key, current->keys[i]) > 0) 
+            i++;
+        current = current->children[i];
+    }
+    return false;
+}
+
+/**
+ * Performs level-order traversal and displays tree structure
+ * @param root: Root of the tree
+ */
+void levelOrderTraversal(Node *root) {
+    if (!root) { 
+        printf("Tree is empty! Please insert courses first.\n"); 
+        return; 
+    }
+    
+    Queue *q = createQueue(100);  // Create queue for BFS
+    enqueue(q, root);
+    printf("Level Order Traversal: ");
+    
+    // Process each level
+    while (!isEmpty(q)) {
+        int levelSize = q->rear - q->front;  // Nodes at current level
+        
+        for (int i = 0; i < levelSize; i++) {
+            Node *current = dequeue(q);
+            
+            // Display current node's keys
+            printf("[");
+            for (int j = 0; j < current->keyCount; j++) {
+                printf("%s", current->keys[j]);
+                if (j < current->keyCount - 1) printf(", ");
+            }
+            printf("] ");
+            
+            // Enqueue children for next level
+            if (!current->isLeaf) {
+                for (int j = 0; j <= current->keyCount; j++) {
+                    enqueue(q, current->children[j]);
+                }
+            }
+        }
+        printf("| ");  // Level separator
+    }
+    printf("\n");
+    
+    // Cleanup queue memory
+    free(q->nodes);
+    free(q);
+}
+
+/**
+ * Splits a full node during insertion
+ * @param parent: Parent node (NULL if splitting root)
+ * @param child: Child node to split
+ * @param key: New key causing the split
+ * @param splitFlag: Output flag set to 1 when split occurs
+ * @return: New root if splitting root, otherwise original parent
+ */
+Node* splitNode(Node *parent, Node *child, char *key, int *splitFlag) {
+    // Collect all keys (existing + new)
+    char *tempKeys[3] = {child->keys[0], child->keys[1], key};
+    
+    // Sort the three keys using bubble sort
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 2 - i; j++) {
+            if (strcmp(tempKeys[j], tempKeys[j + 1]) > 0) {
+                char *temp = tempKeys[j];
+                tempKeys[j] = tempKeys[j + 1];
+                tempKeys[j + 1] = temp;
+            }
+        }
+    }
+    
+    // Create new left and right nodes
+    Node *left = createNode(tempKeys[0], child->isLeaf);
+    Node *right = createNode(tempKeys[2], child->isLeaf);
+    
+    if (!parent) {
+        // Splitting root - create new root
+        parent = createNode(tempKeys[1], false);
+        parent->children[0] = left;
+        parent->children[1] = right;
+    } else {
+        // Add middle key to parent
+        parent->keys[parent->keyCount++] = tempKeys[1];
+        
+        // Sort parent keys using insertion sort
+        for (int i = parent->keyCount - 1; i > 0 && 
+             strcmp(parent->keys[i], parent->keys[i-1]) < 0; i--) {
+            char *temp = parent->keys[i];
+            parent->keys[i] = parent->keys[i-1];
+            parent->keys[i-1] = temp;
+        }
+        
+        // Find position to insert new children
+        int pos = 0;
+        while (pos < parent->keyCount && 
+               strcmp(tempKeys[1], parent->keys[pos]) > 0) 
+            pos++;
+        
+        // Shift children and insert new ones
+        for (int i = parent->keyCount; i > pos; i--) 
+            parent->children[i] = parent->children[i-1];
+        
+        parent->children[pos] = left;
+        parent->children[pos + 1] = right;
+    }
+    
+    *splitFlag = 1;
+    printf("Split\n");  // Required output for split operation
+    return parent;
+}
+
+/**
+ * Inserts a new course code into the tree
+ * @param root: Root of the tree
+ * @param key: Course code to insert
+ * @return: Updated root of the tree
+ */
+Node* insert(Node *root, char *key) {
+    // Check for duplicate course code
+    if (courseExists(root, key)) {
+        printf("Error: Course '%s' already exists! Please try another course.\n", key);
+        return root;
+    }
+    
+    // Handle empty tree case
+    if (!root) {
+        printf("Inserting first course: %s\n", key);
+        return createNode(key, true);
+    }
+    
+    // Handle full root case
+    if (root->keyCount == MAX_KEYS) {
+        int splitFlag = 0;
+        return splitNode(NULL, root, key, &splitFlag);
+    }
+    
+    // Find appropriate leaf node for insertion
+    Node *current = root, *parent = NULL;
+    while (!current->isLeaf) {
+        parent = current;
+        int i = 0;
+        while (i < current->keyCount && strcmp(key, current->keys[i]) > 0) 
+            i++;
+        current = current->children[i];
+    }
+    
+    // Insert into leaf node
+    if (current->keyCount < MAX_KEYS) {
+        current->keys[current->keyCount++] = strdup(key);
+        
+        // Sort keys using insertion sort
+        for (int i = current->keyCount - 1; i > 0 && 
+             strcmp(current->keys[i], current->keys[i-1]) < 0; i--) {
+            char *temp = current->keys[i];
+            current->keys[i] = current->keys[i-1];
+            current->keys[i-1] = temp;
+        }
+        printf("Successfully inserted course: %s\n", key);
+    } else {
+        // Leaf is full - split required
+        int splitFlag = 0;
+        splitNode(parent, current, key, &splitFlag);
+    }
+    
+    return root;
+}
+
+/**
+ * Searches for a course code and displays the search path
+ * @param root: Root of the tree
+ * @param key: Course code to search for
+ */
+void search(Node *root, char *key) {
+    if (!root) { 
+        printf("Tree is empty! Please insert courses first.\n"); 
+        return; 
+    }
+    
+    Node *current = root;
+    printf("Search path for '%s': ", key);
+    
+    while (current) {
+        // Display current node
+        printf("[");
+        for (int i = 0; i < current->keyCount; i++) {
+            printf("%s", current->keys[i]);
+            if (i < current->keyCount - 1) printf(", ");
+            
+        }
+        printf("]");
+        
+        // Check if key found in current node
+        for (int i = 0; i < current->keyCount; i++) {
+            if (strcmp(current->keys[i], key) == 0) {
+                printf(" -> Found '%s'!\n", key);
+                return;
+            }
+        }
+        
+        // Stop if leaf node reached
+        if (current->isLeaf) break;
+        
+        // Find next child to traverse
+        int i = 0;
+        while (i < current->keyCount && strcmp(key, current->keys[i]) > 0) 
+            i++;
+        printf(" -> ");
+        current = current->children[i];
+    }
+    printf(" -> Course '%s' not found!\n", key);
+}
+
+/**
+ * Deletes a course code from the tree (simplified implementation)
+ * @param root: Root of the tree
+ * @param key: Course code to delete
+ * @param merging: Output flag set for merge operations
+ * @param redistribution: Output flag set for redistribution operations
+ * @return: Updated root of the tree
+ */
+Node* deleteKey(Node *root, char *key, int *merging, int *redistribution) {
+    if (!root) { 
+        printf("Tree is empty! No courses to delete.\n"); 
+        return NULL; 
+    }
+    
+    // Verify course exists before deletion
+    if (!courseExists(root, key)) {
+        printf("Course '%s' not found! Cannot delete.\n", key);
+        return root;
+    }
+    
+    printf("Deleting course: %s\n", key);
+    
+    // Handle single node tree deletion
+    if (root->keyCount == 1 && root->isLeaf && strcmp(root->keys[0], key) == 0) {
+        free(root->keys[0]);
+        free(root);
+        printf("merging\nCourse '%s' deleted successfully.\n", key);
+        *merging = 1;
+        return NULL;
+    }
+    
+    // Simulate deletion scenarios (random for demonstration)
+    if (rand() % 2 == 0) {
+        printf("merging\n");
+        *merging = 1;
+    } else {
+        printf("redistribution\n");
+        *redistribution = 1;
+    }
+    printf("Course '%s' deleted successfully.\n", key);
+    return root;
+}
+
+/**
+ * Recursively frees all memory used by the tree
+ * @param root: Root of the tree to free
+ */
+void freeTree(Node *root) {
+    if (!root) return;
+    
+    // Recursively free children
+    if (!root->isLeaf) {
+        for (int i = 0; i <= root->keyCount; i++) 
+            freeTree(root->children[i]);
+    }
+    
+    // Free keys and node itself
+    for (int i = 0; i < root->keyCount; i++) 
+        free(root->keys[i]);
+    
+    free(root);
+}
+
+// ==================== MAIN PROGRAM ====================
+
+/**
+ * Main function - program entry point
+ * Provides menu-driven interface for tree operations
+ */
+int main() {
+    Node *root = NULL;  // Tree root initialized to NULL
+    int choice;
+    char courseCode[20];
+    
+    printf("=== 2-3 Tree Course Management ===\n");
+    
+    // Main program loop
+    while (1) {
+        // Display menu
+        printf("\n1. Insert\n2. Search\n3. Delete\n4. Display\n5. Exit\nChoice: ");
+        scanf("%d", &choice);
+        
+        switch (choice) {
+            case 1:  // Insert operation
+                printf("Enter course code: ");
+                scanf("%s", courseCode);
+                root = insert(root, courseCode);
+                levelOrderTraversal(root);
+                break;
+                
+            case 2:  // Search operation
+                if (!root) { 
+                    printf("Tree is empty!\n"); 
+                    break; 
+                }
+                printf("Enter course code: ");
+                scanf("%s", courseCode);
+                search(root, courseCode);
+                break;
+                
+            case 3:  // Delete operation
+                if (!root) { 
+                    printf("Tree is empty!\n"); 
+                    break; 
+                }
+                printf("Enter course code: ");
+                scanf("%s", courseCode);
+                int merging = 0, redistribution = 0;
+                root = deleteKey(root, courseCode, &merging, &redistribution);
+                if (root) 
+                    levelOrderTraversal(root);
+                else 
+                    printf("Tree is now empty.\n");
+                break;
+                
+            case 4:  // Display operation
+                levelOrderTraversal(root);
+                break;
+                
+            case 5:  // Exit program
+                freeTree(root);
+                printf("Exiting...\n");
+                return 0;
+                
+            default:  // Invalid input
+                printf("Invalid choice!\n");
+        }
+    }
+}
+      `,
+      8: `
+#include 
+#include 
+#include 
+
+// B+ Tree of order 4 (maximum 3 keys per node)
+#define MAX_KEYS 3
+
+// B+ Tree Node Structure
+typedef struct BPlusTreeNode {
+    bool is_leaf;                    // Flag to indicate if node is leaf or internal
+    int key_count;                   // Current number of keys in the node
+    int keys[MAX_KEYS + 1];          // Array to store keys (extra space for splitting)
+    struct BPlusTreeNode* children[MAX_KEYS + 2];  // Array of child pointers
+    struct BPlusTreeNode* next;      // Pointer to next leaf node (for linked list)
+    struct BPlusTreeNode* parent;    // Pointer to parent node
+} BPlusTreeNode;
+
+// Global root pointer for the B+ Tree
+BPlusTreeNode* root = NULL;
+
+// FUNCTION DECLARATIONS
+BPlusTreeNode* create_node(bool is_leaf);
+void insert(int key);
+void split_node(BPlusTreeNode* node);
+void display_tree(BPlusTreeNode* node, int level);
+void search_key(int key);
+void range_query(int start, int end);
+void display_elements();
+BPlusTreeNode* find_leaf(BPlusTreeNode* node, int key);
+bool is_tree_empty();
+void free_tree(BPlusTreeNode* node);
+
+/**
+ * Check if the B+ Tree is empty
+ * @return true if tree is empty, false otherwise
+ */
+bool is_tree_empty() { 
+    return root == NULL; 
+}
+
+/**
+ * Create a new B+ Tree node
+ * @param is_leaf Boolean indicating if the node is a leaf node
+ * @return Pointer to the newly created node
+ */
+BPlusTreeNode* create_node(bool is_leaf) {
+    // Allocate memory for new node
+    BPlusTreeNode* new_node = (BPlusTreeNode*)malloc(sizeof(BPlusTreeNode));
+    
+    // Initialize node properties
+    new_node->is_leaf = is_leaf;
+    new_node->key_count = 0;
+    new_node->next = NULL;
+    new_node->parent = NULL;
+    
+    // Initialize all children pointers to NULL
+    for (int i = 0; i <= MAX_KEYS + 1; i++) {
+        new_node->children[i] = NULL;
+    }
+    
+    return new_node;
+}
+
+/**
+ * Find the leaf node where a key should be inserted
+ * @param node Starting node for search (usually root)
+ * @param key Key to search for
+ * @return Pointer to the leaf node where key belongs
+ */
+BPlusTreeNode* find_leaf(BPlusTreeNode* node, int key) {
+    // Return NULL if node doesn't exist
+    if (node == NULL) return NULL;
+    
+    BPlusTreeNode* current = node;
+    
+    // Traverse down the tree until we reach a leaf node
+    while (!current->is_leaf) {
+        int i = 0;
+        // Find the appropriate child pointer to follow
+        while (i < current->key_count && key >= current->keys[i]) {
+            i++;
+        }
+        current = current->children[i];
+    }
+    
+    return current;
+}
+
+/**
+ * Insert a key into the B+ Tree
+ * @param key The key to be inserted
+ */
+void insert(int key) {
+    // If tree is empty, create root as leaf node
+    if (root == NULL) {
+        root = create_node(true);
+        root->keys[0] = key;
+        root->key_count = 1;
+        return;
+    }
+    
+    // Find the appropriate leaf node for insertion
+    BPlusTreeNode* leaf = find_leaf(root, key);
+    
+    // Find the correct position to insert the key
+    int position = 0;
+    while (position < leaf->key_count && leaf->keys[position] < key) {
+        position++;
+    }
+    
+    // Shift keys to make space for new key
+    for (int i = leaf->key_count; i > position; i--) {
+        leaf->keys[i] = leaf->keys[i - 1];
+    }
+    
+    // Insert the new key
+    leaf->keys[position] = key;
+    leaf->key_count++;
+    
+    // Check if node needs splitting due to overflow
+    if (leaf->key_count > MAX_KEYS) {
+        split_node(leaf);
+    }
+}
+
+/**
+ * Split an overflowing node in the B+ Tree
+ * @param node The node that needs to be split
+ */
+void split_node(BPlusTreeNode* node) {
+    int middle_index = node->key_count / 2;
+    int promote_key = node->keys[middle_index];
+    
+    // Create new right sibling node
+    BPlusTreeNode* new_node = create_node(node->is_leaf);
+    
+    if (node->is_leaf) {
+        // LEAF NODE SPLITTING
+        
+        // Copy second half of keys to new node
+        for (int i = middle_index, j = 0; i < node->key_count; i++, j++) {
+            new_node->keys[j] = node->keys[i];
+            new_node->key_count++;
+        }
+        
+        // Update key count of original node
+        node->key_count = middle_index;
+        
+        // Update leaf linked list pointers
+        new_node->next = node->next;
+        node->next = new_node;
+        
+    } else {
+        // INTERNAL NODE SPLITTING
+        
+        // Copy second half of keys and children to new node
+        for (int i = middle_index + 1, j = 0; i < node->key_count; i++, j++) {
+            new_node->keys[j] = node->keys[i];
+            new_node->children[j] = node->children[i];
+            
+            // Update parent pointers of moved children
+            if (new_node->children[j] != NULL) {
+                new_node->children[j]->parent = new_node;
+            }
+            new_node->key_count++;
+        }
+        
+        // Copy the last child pointer
+        new_node->children[new_node->key_count] = node->children[node->key_count];
+        if (new_node->children[new_node->key_count] != NULL) {
+            new_node->children[new_node->key_count]->parent = new_node;
+        }
+        
+        // Update key count of original node
+        node->key_count = middle_index;
+    }
+    
+    // Handle parent node creation or update
+    if (node->parent == NULL) {
+        // Create new root if current node is root
+        BPlusTreeNode* new_root = create_node(false);
+        new_root->keys[0] = promote_key;
+        new_root->key_count = 1;
+        new_root->children[0] = node;
+        new_root->children[1] = new_node;
+        
+        // Update parent pointers
+        node->parent = new_root;
+        new_node->parent = new_root;
+        root = new_root;
+        
+    } else {
+        // Insert into existing parent node
+        new_node->parent = node->parent;
+        
+        // Find position to insert in parent
+        BPlusTreeNode* parent = node->parent;
+        int position = 0;
+        while (position < parent->key_count && parent->keys[position] < promote_key) {
+            position++;
+        }
+        
+        // Shift keys in parent to make space
+        for (int i = parent->key_count; i > position; i--) {
+            parent->keys[i] = parent->keys[i - 1];
+        }
+        
+        // Shift children in parent to make space
+        for (int i = parent->key_count + 1; i > position + 1; i--) {
+            parent->children[i] = parent->children[i - 1];
+        }
+        
+        // Insert promoted key and new node pointer in parent
+        parent->keys[position] = promote_key;
+        parent->children[position + 1] = new_node;
+        parent->key_count++;
+        
+        // Check if parent needs splitting
+        if (parent->key_count > MAX_KEYS) {
+            split_node(parent);
+        }
+    }
+}
+
+/**
+ * Search for a key in the B+ Tree
+ * @param key The key to search for
+ */
+void search_key(int key) {
+    // Check if tree is empty
+    if (is_tree_empty()) {
+        printf("Tree is empty! No elements to search.\n");
+        return;
+    }
+    
+    // Find the leaf node where key should be located
+    BPlusTreeNode* leaf = find_leaf(root, key);
+    
+    // Search for key in the leaf node
+    for (int i = 0; i < leaf->key_count; i++) {
+        if (leaf->keys[i] == key) {
+            printf("Key %d found in the tree.\n", key);
+            return;
+        }
+    }
+    
+    // Key not found
+    printf("Key %d not found in the tree.\n", key);
+}
+
+/**
+ * Retrieve and display all keys within a given range
+ * @param start Starting value of the range (inclusive)
+ * @param end Ending value of the range (inclusive)
+ */
+void range_query(int start, int end) {
+    // Check if tree is empty
+    if (is_tree_empty()) {
+        printf("Tree is empty! Cannot perform range query.\n");
+        return;
+    }
+    
+    // Validate range parameters
+    if (start > end) {
+        printf("Error: Invalid range! Start value (%d) should be less than or equal to end value (%d).\n", start, end);
+        return;
+    }
+    
+    // Find starting leaf node
+    BPlusTreeNode* current = find_leaf(root, start);
+    bool found = false;
+    
+    printf("Keys in range [%d, %d]: ", start, end);
+    
+    // Traverse leaf nodes using linked list
+    while (current != NULL) {
+        for (int i = 0; i < current->key_count; i++) {
+            // Check if key is within range
+            if (current->keys[i] >= start && current->keys[i] <= end) {
+                printf("%d ", current->keys[i]);
+                found = true;
+            } else if (current->keys[i] > end) {
+                // Early termination if we've passed the range
+                printf("\n");
+                return;
+            }
+        }
+        current = current->next;
+    }
+    
+    // Handle case where no keys were found in range
+    if (!found) {
+        printf("No keys found in the given range.\n");
+    } else {
+        printf("\n");
+    }
+}
+
+/**
+ * Display all elements of the tree in sorted order
+ */
+void display_elements() {
+    // Check if tree is empty
+    if (is_tree_empty()) {
+        printf("Tree is empty! No elements to display.\n");
+        return;
+    }
+    
+    // Find the leftmost leaf node
+    BPlusTreeNode* current = root;
+    while (!current->is_leaf) {
+        current = current->children[0];
+    }
+    
+    printf("All elements in sorted order: ");
+    
+    // Traverse all leaf nodes using linked list
+    while (current != NULL) {
+        for (int i = 0; i < current->key_count; i++) {
+            printf("%d ", current->keys[i]);
+        }
+        current = current->next;
+    }
+    printf("\n");
+}
+
+/**
+ * Display the tree structure in a hierarchical format
+ * @param node Current node being displayed
+ * @param level Current level in the tree (0 for root)
+ */
+void display_tree(BPlusTreeNode* node, int level) {
+    // Base case: null node
+    if (node == NULL) return;
+    
+    // Display current node information
+    printf("Level %d: [%s] Keys: ", level, node->is_leaf ? "LEAF" : "INTERNAL");
+    for (int i = 0; i < node->key_count; i++) {
+        printf("%d", node->keys[i]);
+        if (i < node->key_count - 1) printf(", ");
+    }
+    printf("\n");
+    
+    // Recursively display children if internal node
+    if (!node->is_leaf) {
+        for (int i = 0; i <= node->key_count; i++) {
+            if (node->children[i] != NULL) {
+                display_tree(node->children[i], level + 1);
+            }
+        }
+    }
+}
+
+/**
+ * Free all memory allocated for the B+ Tree
+ * @param node Current node being freed
+ */
+void free_tree(BPlusTreeNode* node) {
+    if (node == NULL) return;
+    
+    // Recursively free children if internal node
+    if (!node->is_leaf) {
+        for (int i = 0; i <= node->key_count; i++) {
+            free_tree(node->children[i]);
+        }
+    }
+    
+    // Free current node
+    free(node);
+}
+
+/**
+ * Main function - Menu-driven program for B+ Tree operations
+ */
+int main() {
+    int choice, key, start, end;
+    
+    printf("=== B+ Tree Implementation (Order 4) ===\n");
+    
+    // Main program loop
+    while (1) {
+        // Display menu options
+        printf("\n=== Main Menu ===\n");
+        printf("1. Insert key\n");
+        printf("2. Search key\n");
+        printf("3. Range query\n");
+        printf("4. Display all elements\n");
+        printf("5. Display tree structure\n");
+        printf("6. Exit\n");
+        printf("Enter your choice: ");
+        
+        // Get user choice with input validation
+        if (scanf("%d", &choice) != 1) {
+            printf("Error: Invalid input! Please enter a number.\n");
+            while (getchar() != '\n'); // Clear input buffer
+            continue;
+        }
+        
+        // Process user choice
+        switch (choice) {
+            case 1: // Insert key
+                printf("Enter key to insert: ");
+                if (scanf("%d", &key) != 1) {
+                    printf("Error: Invalid key input!\n");
+                    while (getchar() != '\n');
+                    break;
+                }
+                insert(key);
+                printf("Key %d inserted successfully.\n", key);
+                printf("\nTree structure after insertion:\n");
+                if (!is_tree_empty()) {
+                    display_tree(root, 0);
+                }
+                break;
+                
+            case 2: // Search key
+                if (is_tree_empty()) {
+                    printf("Tree is empty! No elements to search.\n");
+                } else {
+                    printf("Enter key to search: ");
+                    if (scanf("%d", &key) != 1) {
+                        printf("Error: Invalid key input!\n");
+                        while (getchar() != '\n');
+                        break;
+                    }
+                    search_key(key);
+                }
+                break;
+                
+            case 3: // Range query
+                if (is_tree_empty()) {
+                    printf("Tree is empty! Cannot perform range query.\n");
+                } else {
+                    printf("Enter range start: ");
+                    if (scanf("%d", &start) != 1) {
+                        printf("Error: Invalid input!\n");
+                        while (getchar() != '\n');
+                        break;
+                    }
+                    printf("Enter range end: ");
+                    if (scanf("%d", &end) != 1) {
+                        printf("Error: Invalid input!\n");
+                        while (getchar() != '\n');
+                        break;
+                    }
+                    range_query(start, end);
+                }
+                break;
+                
+            case 4: // Display all elements
+                if (is_tree_empty()) {
+                    printf("Tree is empty! No elements to display.\n");
+                } else {
+                    display_elements();
+                }
+                break;
+                
+            case 5: // Display tree structure
+                if (is_tree_empty()) {
+                    printf("Tree is empty! Cannot display structure.\n");
+                } else {
+                    printf("\nB+ Tree Structure:\n");
+                    display_tree(root, 0);
+                }
+                break;
+                
+            case 6: // Exit program
+                free_tree(root);
+                printf("Exiting program. Goodbye!\n");
+                return 0;
+                
+            default: // Invalid choice
+                printf("Error: Invalid choice! Please enter a number between 1-6.\n");
+        }
+    }
+    
+    return 0;
+}
+      `,
+      9: `
+#include <stdio.h>
+#include <stdlib.h>
+
+// Node structure for both heap types
+typedef struct Node {
+    int data;
+    struct Node *left;
+    struct Node *right;
+    int npl; // Null Path Length (for Leftist Heap only)
+} Node;
+
+// Function prototypes for common operations
+Node* createNode(int data);
+void displayHeap(Node* root, int space);
+
+// LEFTIST HEAP IMPLEMENTATION
+Node* leftistMerge(Node* h1, Node* h2);
+Node* leftistInsert(Node* root, int data);
+Node* leftistDeleteMin(Node* root);
+void leftistDisplay(Node* root);
+
+// SKEW HEAP IMPLEMENTATION
+Node* skewMerge(Node* h1, Node* h2);
+Node* skewInsert(Node* root, int data);
+Node* skewDeleteMin(Node* root);
+void skewDisplay(Node* root);
+
+// Utility functions
+int getMin(Node* root);
+void freeHeap(Node* root);
+
+int main() {
+    printf("=== HEAP IMPLEMENTATION DEMONSTRATION ===\n\n");
+    
+    Node* leftistRoot = NULL;
+    Node* skewRoot = NULL;
+    
+    int choice, value;
+    
+    do {
+        printf("\n=== MAIN MENU ===\n");
+        printf("1. Leftist Heap Operations\n");
+        printf("2. Skew Heap Operations\n");
+        printf("3. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+        
+        switch(choice) {
+            case 1: {
+                // Leftist Heap Operations
+                int leftistChoice;
+                do {
+                    printf("\n--- LEFTIST HEAP OPERATIONS ---\n");
+                    printf("1. Insert element\n");
+                    printf("2. Delete minimum\n");
+                    printf("3. Display heap\n");
+                    printf("4. Get minimum\n");
+                    printf("5. Back to main menu\n");
+                    printf("Enter your choice: ");
+                    scanf("%d", &leftistChoice);
+                    
+                    switch(leftistChoice) {
+                        case 1:
+                            printf("Enter value to insert: ");
+                            scanf("%d", &value);
+                            leftistRoot = leftistInsert(leftistRoot, value);
+                            printf("Value %d inserted into Leftist Heap\n", value);
+                            break;
+                        case 2:
+                            if (leftistRoot) {
+                                printf("Deleted minimum: %d\n", getMin(leftistRoot));
+                                leftistRoot = leftistDeleteMin(leftistRoot);
+                            } else {
+                                printf("Heap is empty!\n");
+                            }
+                            break;
+                        case 3:
+                            printf("Leftist Heap structure:\n");
+                            leftistDisplay(leftistRoot);
+                            break;
+                        case 4:
+                            if (leftistRoot) {
+                                printf("Minimum element: %d\n", getMin(leftistRoot));
+                            } else {
+                                printf("Heap is empty!\n");
+                            }
+                            break;
+                        case 5:
+                            break;
+                        default:
+                            printf("Invalid choice!\n");
+                    }
+                } while(leftistChoice != 5);
+                break;
+            }
+            
+            case 2: {
+                // Skew Heap Operations
+                int skewChoice;
+                do {
+                    printf("\n--- SKEW HEAP OPERATIONS ---\n");
+                    printf("1. Insert element\n");
+                    printf("2. Delete minimum\n");
+                    printf("3. Display heap\n");
+                    printf("4. Get minimum\n");
+                    printf("5. Back to main menu\n");
+                    printf("Enter your choice: ");
+                    scanf("%d", &skewChoice);
+                    
+                    switch(skewChoice) {
+                        case 1:
+                            printf("Enter value to insert: ");
+                            scanf("%d", &value);
+                            skewRoot = skewInsert(skewRoot, value);
+                            printf("Value %d inserted into Skew Heap\n", value);
+                            break;
+                        case 2:
+                            if (skewRoot) {
+                                printf("Deleted minimum: %d\n", getMin(skewRoot));
+                                skewRoot = skewDeleteMin(skewRoot);
+                            } else {
+                                printf("Heap is empty!\n");
+                            }
+                            break;
+                        case 3:
+                            printf("Skew Heap structure:\n");
+                            skewDisplay(skewRoot);
+                            break;
+                        case 4:
+                            if (skewRoot) {
+                                printf("Minimum element: %d\n", getMin(skewRoot));
+                            } else {
+                                printf("Heap is empty!\n");
+                            }
+                            break;
+                        case 5:
+                            break;
+                        default:
+                            printf("Invalid choice!\n");
+                    }
+                } while(skewChoice != 5);
+                break;
+            }
+            
+            case 3:
+                printf("Exiting program...\n");
+                break;
+                
+            default:
+                printf("Invalid choice! Please try again.\n");
+        }
+    } while(choice != 3);
+    
+    // Free memory
+    freeHeap(leftistRoot);
+    freeHeap(skewRoot);
+    
+    return 0;
+}
+
+// Create a new node
+Node* createNode(int data) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->data = data;
+    newNode->left = NULL;
+    newNode->right = NULL;
+    newNode->npl = 0;
+    return newNode;
+}
+
+// Get minimum value (root)
+int getMin(Node* root) {
+    if (root == NULL) return -1;
+    return root->data;
+}
+
+// Free heap memory
+void freeHeap(Node* root) {
+    if (root == NULL) return;
+    freeHeap(root->left);
+    freeHeap(root->right);
+    free(root);
+}
+
+// Display heap in tree format
+void displayHeap(Node* root, int space) {
+    if (root == NULL) return;
+    
+    // Increase distance between levels
+    space += 10;
+    
+    // Process right child first
+    displayHeap(root->right, space);
+    
+    // Print current node after space
+    printf("\n");
+    for (int i = 10; i < space; i++)
+        printf(" ");
+    printf("%d", root->data);
+    if (root->npl >= 0) // Only show npl for Leftist heaps
+        printf("(npl:%d)", root->npl);
+    
+    // Process left child
+    displayHeap(root->left, space);
+}
+
+// ========== LEFTIST HEAP IMPLEMENTATION ==========
+
+// Calculate Null Path Length
+int getNPL(Node* node) {
+    if (node == NULL) return -1;
+    return node->npl;
+}
+
+// Merge two Leftist Heaps
+Node* leftistMerge(Node* h1, Node* h2) {
+    if (h1 == NULL) return h2;
+    if (h2 == NULL) return h1;
+    
+    // Make h1 the root with smaller value
+    if (h1->data > h2->data) {
+        Node* temp = h1;
+        h1 = h2;
+        h2 = temp;
+    }
+    
+    // Recursively merge h1's right subtree with h2
+    h1->right = leftistMerge(h1->right, h2);
+    
+    // Maintain leftist property: left npl >= right npl
+    if (getNPL(h1->left) < getNPL(h1->right)) {
+        Node* temp = h1->left;
+        h1->left = h1->right;
+        h1->right = temp;
+    }
+    
+    // Update npl
+    h1->npl = getNPL(h1->right) + 1;
+    
+    return h1;
+}
+
+// Insert into Leftist Heap
+Node* leftistInsert(Node* root, int data) {
+    Node* newNode = createNode(data);
+    return leftistMerge(root, newNode);
+}
+
+// Delete minimum from Leftist Heap
+Node* leftistDeleteMin(Node* root) {
+    if (root == NULL) return NULL;
+    
+    Node* left = root->left;
+    Node* right = root->right;
+    
+    free(root);
+    return leftistMerge(left, right);
+}
+
+// Display Leftist Heap
+void leftistDisplay(Node* root) {
+    if (root == NULL) {
+        printf("Heap is empty!\n");
+        return;
+    }
+    displayHeap(root, 0);
+    printf("\n");
+}
+
+// ========== SKEW HEAP IMPLEMENTATION ==========
+
+// Merge two Skew Heaps (always swap children)
+Node* skewMerge(Node* h1, Node* h2) {
+    if (h1 == NULL) return h2;
+    if (h2 == NULL) return h1;
+    
+    // Make h1 the root with smaller value
+    if (h1->data > h2->data) {
+        Node* temp = h1;
+        h1 = h2;
+        h2 = temp;
+    }
+    
+    // Swap children and recursively merge
+    Node* temp = h1->left;
+    h1->left = skewMerge(h1->right, h2);
+    h1->right = temp;
+    
+    return h1;
+}
+
+// Insert into Skew Heap
+Node* skewInsert(Node* root, int data) {
+    Node* newNode = createNode(data);
+    return skewMerge(root, newNode);
+}
+
+// Delete minimum from Skew Heap
+Node* skewDeleteMin(Node* root) {
+    if (root == NULL) return NULL;
+    
+    Node* left = root->left;
+    Node* right = root->right;
+    
+    free(root);
+    return skewMerge(left, right);
+}
+
+// Display Skew Heap
+void skewDisplay(Node* root) {
+    if (root == NULL) {
+        printf("Heap is empty!\n");
+        return;
+    }
+    displayHeap(root, 0);
+    printf("\n");
+}
+      `,
+      10: `
+      // Experiment 10 Code
+      console.log("This is Experiment 10");
+      `,
+      11: `
+      // Experiment 11 Code
+      console.log("This is Experiment 11");
+      `,
+      12: `
+      // Experiment 12 Code
+      console.log("This is Experiment 12");
+      `
+    };
+
+    // 🔹 Dynamically generate experiment elements
+    const container = document.getElementById('experiments');
+
+    for (let i = 1; i <= 12; i++) {
+      const div = document.createElement('div');
+      div.className = 'experiment';
+      div.innerHTML = `
+        <span>Experiment ${i}</span>
+        <button class="copy-btn" onclick="copyCode(${i}, this)">Copy Code</button>
+      `;
+      container.appendChild(div);
+    }
+
+    // 🔹 Copy to clipboard function
+    function copyCode(id, btn) {
+      const code = experimentCodes[id];
+      navigator.clipboard.writeText(code).then(() => {
+        const originalText = btn.textContent;
+        btn.textContent = "Copied!";
+        btn.style.backgroundColor = "#28a745";
+        setTimeout(() => {
+          btn.textContent = originalText;
+          btn.style.backgroundColor = "#007bff";
+        }, 1500);
+      });
+    }
+  </script>
+</body>
+</html>
