@@ -1364,8 +1364,234 @@ void skewDisplay(Node* root) {
       console.log("This is Experiment 10");
       `,
       11: `
-      // Experiment 11 Code
-      console.log("This is Experiment 11");
+      /*
+Problem Statement:
+Design and implement a C program to demonstrate the working of Skew Heaps
+and Leftist Heaps. Include functions to perform:
+1. Insert
+2. Delete-Min
+3. Merge
+4. Display
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+
+// -------- NODE STRUCTURE (COMMON FOR BOTH HEAPS) --------
+typedef struct Node {
+    int data, npl;          // npl used only in Leftist heap
+    struct Node *left, *right;
+} Node;
+
+// -------- COMMON UTILITY FUNCTIONS --------
+Node* createNode(int data) {
+    Node* n = (Node*)malloc(sizeof(Node));
+    if (!n) {
+        printf("Memory allocation failed!\n");
+        return NULL;
+    }
+    n->data = data;
+    n->left = n->right = NULL;
+    n->npl = 0;
+    return n;
+}
+
+int getMin(Node* root) {
+    return (root ? root->data : -1);
+}
+
+void display(Node* root, int space) {
+    if (!root) {
+        printf("(empty tree)\n");
+        return;
+    }
+    space += 8;
+    display(root->right, space);
+    printf("\n");
+    for (int i = 8; i < space; i++) printf(" ");
+    printf("%d", root->data);
+    display(root->left, space);
+}
+
+void freeHeap(Node* root) {
+    if (!root) return;
+    freeHeap(root->left);
+    freeHeap(root->right);
+    free(root);
+}
+
+// -------- LEFTIST HEAP FUNCTIONS --------
+int getNPL(Node* n) { return n ? n->npl : -1; }
+
+Node* mergeLeftist(Node* h1, Node* h2) {
+    if (!h1) return h2;
+    if (!h2) return h1;
+
+    if (h2->data < h1->data) { 
+        Node* t = h1; 
+        h1 = h2; 
+        h2 = t; 
+    }
+
+    h1->right = mergeLeftist(h1->right, h2);
+
+    if (getNPL(h1->left) < getNPL(h1->right)) {
+        Node* t = h1->left; 
+        h1->left = h1->right; 
+        h1->right = t;
+    }
+
+    h1->npl = getNPL(h1->right) + 1;
+    return h1;
+}
+
+Node* leftistInsert(Node* root, int data) {
+    Node* newNode = createNode(data);
+    if (!newNode) return root;
+    return mergeLeftist(root, newNode);
+}
+
+Node* leftistDeleteMin(Node* root) {
+    if (!root) {
+        printf("Heap is empty! Cannot delete.\n");
+        return NULL;
+    }
+    Node* left = root->left;
+    Node* right = root->right;
+    printf("Min element %d deleted.\n", root->data);
+    free(root);
+    return mergeLeftist(left, right);
+}
+
+// -------- SKEW HEAP FUNCTIONS --------
+Node* mergeSkew(Node* h1, Node* h2) {
+    if (!h1) return h2;
+    if (!h2) return h1;
+
+    if (h2->data < h1->data) { 
+        Node* t = h1; 
+        h1 = h2; 
+        h2 = t; 
+    }
+
+    Node* temp = h1->left;
+    h1->left = mergeSkew(h1->right, h2);
+    h1->right = temp;
+    return h1;
+}
+
+Node* skewInsert(Node* root, int data) {
+    Node* newNode = createNode(data);
+    if (!newNode) return root;
+    return mergeSkew(root, newNode);
+}
+
+Node* skewDeleteMin(Node* root) {
+    if (!root) {
+        printf("Heap is empty! Cannot delete.\n");
+        return NULL;
+    }
+    Node* left = root->left;
+    Node* right = root->right;
+    printf("Min element %d deleted.\n", root->data);
+    free(root);
+    return mergeSkew(left, right);
+}
+
+// -------- MAIN MENU --------
+int main() {
+    Node *L = NULL, *S = NULL;
+    int ch, val;
+
+    while (1) {
+        printf("\n=========== HEAP MENU ===========\n");
+        printf("1. Leftist Heap\n");
+        printf("2. Skew Heap\n");
+        printf("3. Exit\nChoice: ");
+        
+        if (scanf("%d", &ch) != 1) {
+            printf("Invalid input! Please enter a number.\n");
+            while (getchar() != '\n'); // Clear input buffer
+            continue;
+        }
+
+        if (ch == 3) break;
+        
+        if (ch != 1 && ch != 2) {
+            printf("Invalid choice! Please select 1, 2, or 3.\n");
+            continue;
+        }
+
+        Node **root = (ch == 1) ? &L : &S;  // select heap
+        char* heapName = (ch == 1) ? "Leftist" : "Skew";
+
+        int op;
+        do {
+            printf("\n--- Operations (%s Heap) ---\n", heapName);
+            printf("1. Insert\n2. Delete Min\n3. Merge Another Heap\n4. Display\n5. Back\nChoice: ");
+            
+            if (scanf("%d", &op) != 1) {
+                printf("Invalid input! Please enter a number.\n");
+                while (getchar() != '\n'); // Clear input buffer
+                continue;
+            }
+
+            switch (op) {
+                case 1:
+                    printf("Enter value: ");
+                    if (scanf("%d", &val) != 1) {
+                        printf("Invalid input! Please enter a valid number.\n");
+                        while (getchar() != '\n'); // Clear input buffer
+                    } else {
+                        *root = (ch == 1) ? leftistInsert(*root, val) : skewInsert(*root, val);
+                        printf("Value %d inserted successfully.\n", val);
+                    }
+                    break;
+
+                case 2:
+                    if (*root == NULL) {
+                        printf("Heap is empty! Cannot delete.\n");
+                    } else {
+                        *root = (ch == 1) ? leftistDeleteMin(*root) : skewDeleteMin(*root);
+                    }
+                    break;
+
+                case 3: {
+                    printf("Enter value to create another heap and merge: ");
+                    if (scanf("%d", &val) != 1) {
+                        printf("Invalid input! Please enter a valid number.\n");
+                        while (getchar() != '\n'); // Clear input buffer
+                    } else {
+                        Node* temp = NULL;
+                        temp = (ch == 1) ? leftistInsert(temp, val) : skewInsert(temp, val);
+                        *root = (ch == 1) ? mergeLeftist(*root, temp) : mergeSkew(*root, temp);
+                        printf("Merged successfully.\n");
+                    }
+                    break;
+                }
+
+                case 4:
+                    printf("\n%s Heap Structure:\n", heapName);
+                    display(*root, 0);
+                    printf("\n");
+                    break;
+                    
+                case 5:
+                    printf("Returning to main menu...\n");
+                    break;
+                    
+                default:
+                    printf("Invalid choice! Please select a number between 1-5.\n");
+            }
+
+        } while (op != 5);
+    }
+
+    freeHeap(L);
+    freeHeap(S);
+    printf("Memory freed. Exiting...\n");
+    return 0;
+}
       `,
       12: `
       // Experiment 12 Code
@@ -1402,6 +1628,7 @@ void skewDisplay(Node* root) {
   </script>
 </body>
 </html>
+
 
 
 
