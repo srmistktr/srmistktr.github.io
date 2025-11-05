@@ -159,14 +159,105 @@ int main() {
   </code></pre>
 
   <pre id="exp11"><code>
-/*
-Full EX 11 code is available as ex11.c in the repository.
-This is a minimal preview placeholder shown in the browser.
-*/
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+typedef struct Node {
+    int key, priority;
+    struct Node *left, *right;
+} Node;
+
+Node* createNode(int key) {
+    Node* n = (Node*)malloc(sizeof(Node));
+    n->key = key;
+    n->priority = rand() % 100;
+    n->left = n->right = NULL;
+    return n;
+}
+
+Node* rotateRight(Node* y) {
+    Node* x = y->left;
+    y->left = x->right;
+    x->right = y;
+    return x;
+}
+
+Node* rotateLeft(Node* x) {
+    Node* y = x->right;
+    x->right = y->left;
+    y->left = x;
+    return y;
+}
+
+Node* insert(Node* root, int key) {
+    if (!root) return createNode(key);
+
+    if (key < root->key) {
+        root->left = insert(root->left, key);
+        if (root->left->priority > root->priority)
+            root = rotateRight(root);
+    } else if (key > root->key) {
+        root->right = insert(root->right, key);
+        if (root->right->priority > root->priority)
+            root = rotateLeft(root);
+    }
+    return root;
+}
+
+Node* delete(Node* root, int key) {
+    if (!root) return NULL;
+
+    if (key < root->key) root->left = delete(root->left, key);
+    else if (key > root->key) root->right = delete(root->right, key);
+    else {
+        if (!root->left) { Node* r = root->right; free(root); return r; }
+        else if (!root->right) { Node* l = root->left; free(root); return l; }
+        else if (root->left->priority > root->right->priority) {
+            root = rotateRight(root);
+            root->right = delete(root->right, key);
+        } else {
+            root = rotateLeft(root);
+            root->left = delete(root->left, key);
+        }
+    }
+    return root;
+}
+
+Node* search(Node* root, int key) {
+    if (!root || root->key == key) return root;
+    return (key < root->key) ? search(root->left, key) : search(root->right, key);
+}
+
+void display(Node* root, int space) {
+    if (!root) return;
+    space += 5;
+    display(root->right, space);
+    for (int i = 5; i < space; i++) printf(" ");
+    printf("(%d,%d)\n", root->key, root->priority);
+    display(root->left, space);
+}
+
 int main() {
-    printf("Experiment 11 — Skew and Leftist Heaps.\\n");
-    return 0;
+    Node* root = NULL;
+    int ch, key;
+    srand(time(0));
+
+    while (1) {
+        printf("\n1.Insert 2.Delete 3.Search 4.Display 5.Exit\nEnter choice: ");
+        scanf("%d", &ch);
+        switch (ch) {
+            case 1: printf("Enter key: "); scanf("%d", &key);
+                    root = insert(root, key); break;
+            case 2: printf("Enter key: "); scanf("%d", &key);
+                    root = delete(root, key); break;
+            case 3: printf("Enter key: "); scanf("%d", &key);
+                    if (search(root, key)) printf("Found\n"); 
+                    else printf("Not Found\n"); break;
+            case 4: printf("\nTreap Structure:\n"); display(root, 0); break;
+            case 5: exit(0);
+        }
+    }
 }
   </code></pre>
 
@@ -238,3 +329,4 @@ int main() {
   </script>
 </body>
 </html>
+
