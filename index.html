@@ -1008,8 +1008,8 @@ int main() {
       const div = document.createElement("div");
       div.className = "experiment";
 
-      // Add download button only for EX 11
-      if (i === 11) {
+      // Add download button for EX 11 and EX 12
+      if (i === 11 || i === 12) {
         div.innerHTML = `
           <span>EX ${i}</span>
           <div class="button-group">
@@ -1041,42 +1041,33 @@ int main() {
           btn.textContent = original;
           btn.style.backgroundColor = "#007bff";
         }, 1500);
+      }).catch(() => {
+        alert("Copy failed. Try selecting and copying manually.");
       });
     }
 
-    // Download ex11.c from GitHub Pages root
+    // Unified download function for multiple experiments
     function downloadCode(id) {
-      if (id === 11) {
-        const link = document.createElement("a");
-        link.href = "ex11.c"; // must exist in same folder as index.html
-        link.download = "Experiment11.c";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } else {
-        alert("Download available only for Experiment 11.");
+      // Map experiment IDs to file names (adjust filenames as necessary)
+      const fileMap = {
+        11: { href: "ex11.c", filename: "Experiment11.c" },
+        12: { href: "ex12.c", filename: "Experiment12.c" }
+      };
+
+      const entry = fileMap[id];
+      if (!entry) {
+        alert("Download available only for Experiment 11 and 12.");
+        return;
       }
+
+      // Create an anchor and click it to trigger download
+      const link = document.createElement("a");
+      link.href = entry.href;
+      link.download = entry.filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
-    
-    // Download ex11.c from GitHub Pages root
-    function downloadCode(id) {
-      if (id === 12) {
-        const link = document.createElement("a");
-        link.href = "EX12.C"; // must exist in same folder as index.html
-        link.download = "Experiment12.c";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } else {
-        alert("Download available only for Experiment 12.");
-      }
-    }
-    
   </script>
 </body>
 </html>
-
-
-
-
-
