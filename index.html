@@ -1057,9 +1057,25 @@ int main() {
         alert("Download available only for Experiment 11.");
       }
     }
+    
+    // Download ex11.c from GitHub Pages root
+    function downloadCode(id) {
+      if (id === 12) {
+        const link = document.createElement("a");
+        link.href = "EX12.C"; // must exist in same folder as index.html
+        link.download = "Experiment12.c";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else {
+        alert("Download available only for Experiment 12.");
+      }
+    }
+    
   </script>
 </body>
 </html>
+
 
 
 
